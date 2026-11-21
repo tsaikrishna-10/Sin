@@ -241,18 +241,18 @@ function centerUrl(){return $('centerUrl')?.value.trim()||''}
 if($('inspectCenterUrl'))$('inspectCenterUrl').onclick=async()=>{
  const url=centerUrl(),status=$('centerStatus');if(!url){status.textContent='Paste a direct media URL first.';return}
  status.textContent='Checking the media link…';
- try{const meta=await inspectMediaUrl(url);const mode=$('centerMode').value;if(mode==='audio'&&!meta.type.startsWith('audio/'))throw Error('The detected source is not audio.');if(mode==='video'&&!meta.type.startsWith('video/'))throw Error('The detected source is not video.');status.textContent='Detected '+meta.type+' · '+formatBytes(meta.bytes)+(meta.filename?' · '+meta.filename:'')+'. Quality label is user-selected; the link itself determines the actual quality.';if(meta.filename&&!$('centerName').value)$('centerName').value=meta.filename.replace(/\\.[^.]+$/,'');}
+ try{const meta=await inspectMediaUrl(url);const mode=$('centerMode').value;if(mode==='audio'&&!meta.type.startsWith('audio/'))throw Error('The detected source is not audio.');if(mode==='video'&&!meta.type.startsWith('video/'))throw Error('The detected source is not video.');status.textContent='Detected '+meta.type+' · '+formatBytes(meta.bytes)+(meta.filename?' · '+meta.filename:'')+'. Quality label is user-selected; the link itself determines the actual quality.';if(meta.filename&&!$('centerName').value)$('centerName').value=meta.filename.replace(/\.[^.]+$/,'');}
  catch(e){status.textContent=e.message+' Some hosts block browser inspection (CORS); this does not prove the link is invalid.'}
 };
 if($('addCenterUrl'))$('addCenterUrl').onclick=()=>{
  const url=centerUrl(),name=$('centerName').value.trim()||'SIN media download',quality=$('centerQuality').value;
- if(!/^https?:\\/\\//i.test(url)){$('centerStatus').textContent='Enter a valid direct HTTP(S) media URL.';return}
+ if(!/^https?:\/\//i.test(url)){$('centerStatus').textContent='Enter a valid direct HTTP(S) media URL.';return}
  enqueueDownload(url,name,quality);$('centerMode').value='auto';$('centerUrl').value='';$('centerName').value='';$('centerStatus').textContent='Added to queue. The source must allow direct file access for downloading to work.';
 };
 if($('downloadsClear'))$('downloadsClear').onclick=()=>{downloadQueue=[];saveDownloadQueue()};
 function enqueueDownload(url,name,quality){if(!/^https?:\/\//i.test(url)){$('playerStatus').textContent='Enter a valid direct HTTP(S) URL first.';return}if(downloadQueue.some(x=>x.url===url&&x.quality===quality)){$('playerStatus').textContent='This source and quality are already queued.';return}downloadQueue.push({url,name:name||'Video download',quality:quality||'Original',status:'Queued'});saveDownloadQueue();$('playerStatus').textContent='Added to queue · '+(quality||'Original')+'. Make sure the URL is the matching quality version.'}
-function safeFileName(name){return String(name||'SIN-download').replace(/[\\/:*?"<>|]+/g,'_').replace(/\\s+/g,' ').trim().slice(0,120)||'SIN-download'}
-function mediaExt(type,url){const path=(()=>{try{return new URL(url).pathname.toLowerCase()}catch(e){return ''}})();const m=path.match(/\\.(mp4|m4v|webm|mp3|m4a|aac|ogg|wav|flac|mov|mkv)$/);if(m)return m[1];if(type&&type.includes('audio'))return 'mp3';return 'mp4'}
+function safeFileName(name){return String(name||'SIN-download').replace(/[\\/:*?"<>|]+/g,'_').replace(/\s+/g,' ').trim().slice(0,120)||'SIN-download'}
+function mediaExt(type,url){const path=(()=>{try{return new URL(url).pathname.toLowerCase()}catch(e){return ''}})();const m=path.match(/\.(mp4|m4v|webm|mp3|m4a|aac|ogg|wav|flac|mov|mkv)$/);if(m)return m[1];if(type&&type.includes('audio'))return 'mp3';return 'mp4'}
 async function inspectMediaUrl(url){
  if(!/^https?:\\/\\//i.test(url))throw Error('Enter a valid HTTP(S) media URL.');
  const u=new URL(url);if(!['http:','https:'].includes(u.protocol))throw Error('Only HTTP(S) URLs are supported.');
@@ -260,7 +260,7 @@ async function inspectMediaUrl(url){
  if(!response.ok)throw Error('Source returned HTTP '+response.status+'.');
  const type=response.headers.get('content-type')||'unknown',size=Number(response.headers.get('content-length')||0),disposition=response.headers.get('content-disposition')||'';
  if(type.includes('text/html'))throw Error('This is a webpage, not a direct media file.');
- if(!(type.startsWith('video/')||type.startsWith('audio/')||/\\.(mp4|m4v|webm|mp3|m4a|aac|ogg|wav|flac|mov|mkv|m3u8)(\\?|$)/i.test(url)))throw Error('Could not confirm a direct audio/video file. Add only a direct media URL.');
+ if(!(type.startsWith('video/')||type.startsWith('audio/')||/\.(mp4|m4v|webm|mp3|m4a|aac|ogg|wav|flac|mov|mkv|m3u8)(\?|$)/i.test(url)))throw Error('Could not confirm a direct audio/video file. Add only a direct media URL.');
  const filename=(disposition.match(/filename\*?=(?:UTF-8''|")?([^";]+)/i)||[])[1];
  return {type,size,filename:filename?decodeURIComponent(filename.replace(/"/g,'')):decodeURIComponent(u.pathname.split('/').pop()||''),bytes:size};
 }
