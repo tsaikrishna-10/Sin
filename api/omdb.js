@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
     return res.status(405).json({ Response: 'False', Error: 'Method not allowed' });
   }
   const imdbId = String(req.query.i || '').trim();
-  if (!/^tt\\d{7,10}$/.test(imdbId)) {
+  if (!/^tt[0-9]{7,10}$/.test(imdbId)) {
     return res.status(400).json({ Response: 'False', Error: 'A valid IMDb ID is required.' });
   }
   const apiKey = process.env.OMDB_API_KEY;
