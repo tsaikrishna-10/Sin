@@ -254,7 +254,7 @@ function enqueueDownload(url,name,quality){if(!/^https?:\/\//i.test(url)){$('pla
 function safeFileName(name){return String(name||'SIN-download').replace(/[\\/:*?"<>|]+/g,'_').replace(/\s+/g,' ').trim().slice(0,120)||'SIN-download'}
 function mediaExt(type,url){const path=(()=>{try{return new URL(url).pathname.toLowerCase()}catch(e){return ''}})();const m=path.match(/\.(mp4|m4v|webm|mp3|m4a|aac|ogg|wav|flac|mov|mkv)$/);if(m)return m[1];if(type&&type.includes('audio'))return 'mp3';return 'mp4'}
 async function inspectMediaUrl(url){
- if(!/^https?:\\/\\//i.test(url))throw Error('Enter a valid HTTP(S) media URL.');
+ if(!/^https?:\/\//i.test(url))throw Error('Enter a valid HTTP(S) media URL.');
  const u=new URL(url);if(!['http:','https:'].includes(u.protocol))throw Error('Only HTTP(S) URLs are supported.');
  const response=await fetch(url,{method:'HEAD',mode:'cors',cache:'no-store'});
  if(!response.ok)throw Error('Source returned HTTP '+response.status+'.');
