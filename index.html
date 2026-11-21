@@ -62,10 +62,18 @@
 </div>
 <section id="downloads" class="page">
  <div class="section-head"><h2>Downloads</h2><small id="downloadsCount">0 items</small></div>
- <div class="panel"><h3>Download center</h3><p class="muted">Manage your authorized movie and episode download links inside SIN. Choose a quality when adding a source; the source must provide a real downloadable file.</p>
- <div class="actions"><button class="secondary" id="downloadsRefresh">↻ Refresh</button><button class="secondary" id="downloadsClear">Clear queue</button></div>
- <div id="downloadsQueue"><div class="empty">No downloads yet. Open a title → Downloads → add a source.</div></div>
+ <div class="panel"><h3>Download a direct media link</h3><p class="muted">Paste a direct video or audio file URL from a source you own or are authorized to download. SIN can inspect direct media links where the host permits browser access.</p>
+ <div class="form-grid">
+  <div class="full"><label for="centerUrl">Media URL</label><input class="field" id="centerUrl" inputmode="url" placeholder="https://example.com/video.mp4"></div>
+  <div><label for="centerMode">Download mode</label><select class="field" id="centerMode"><option value="auto">Auto detect</option><option value="video">Video</option><option value="audio">Audio only</option></select></div>
+  <div><label for="centerQuality">Quality label</label><select class="field" id="centerQuality"><option>Original</option><option>2160p</option><option selected>1080p</option><option>720p</option><option>480p</option></select></div>
+  <div class="full"><label for="centerName">File name (optional)</label><input class="field" id="centerName" placeholder="My video"></div>
  </div>
+ <div class="actions"><button class="primary" id="inspectCenterUrl">◎ Detect media</button><button class="secondary" id="addCenterUrl">＋ Add to queue</button></div>
+ <div class="status" id="centerStatus">Auto detection works for direct media URLs; protected pages, DRM streams and embedded players are not downloadable here.</div>
+ </div>
+ <div class="panel"><div class="section-head" style="margin:0 0 12px"><h3>Download queue</h3><div class="actions" style="margin:0"><button class="secondary" id="downloadsRefresh">↻ Refresh</button><button class="secondary" id="downloadsClear">Clear queue</button></div></div>
+ <div id="downloadsQueue"><div class="empty">Your download queue is empty. Paste an authorized direct media URL above.</div></div></div>
  <div class="panel"><h3>How downloads work</h3><p class="muted">SIN keeps your download queue and starts file downloads from this screen. Android/browser handles the actual file save. A provider must allow direct downloads; an embedded Mapple stream cannot be converted into a file by SIN.</p></div>
  </section>
  <section id="settings" class="page"><div class="section-head"><h2>Settings</h2></div>
@@ -229,9 +237,57 @@ let downloadQueue=readStore('sin_download_queue',[]);if(!Array.isArray(downloadQ
 function renderDownloadQueue(){const markup=!downloadQueue.length?'<div class="empty">Your download queue is empty.</div>':downloadQueue.map((x,i)=>'<div class="episode"><div><strong>'+esc(x.name)+'</strong><small>'+esc(x.quality||'Original')+' · '+esc(x.status)+'</small></div><div style="min-width:0"><small style="overflow-wrap:anywhere">'+esc(x.url)+'</small></div><div><button class="secondary" data-dl="'+i+'">↓ Download</button> <button class="secondary" data-remove-dl="'+i+'">×</button></div></div>').join('');['downloadQueue','downloadsQueue'].forEach(id=>{const el=$(id);if(el)el.innerHTML=markup});const count=$('downloadsCount');if(count)count.textContent=downloadQueue.length+' items';document.querySelectorAll('#downloadQueue [data-dl],#downloadsQueue [data-dl]').forEach(b=>b.onclick=()=>startQueuedDownload(Number(b.dataset.dl)));document.querySelectorAll('#downloadQueue [data-remove-dl],#downloadsQueue [data-remove-dl]').forEach(b=>b.onclick=()=>{downloadQueue.splice(Number(b.dataset.removeDl),1);saveDownloadQueue()})}
 function saveDownloadQueue(){writeStore('sin_download_queue',downloadQueue);renderDownloadQueue()}
 if($('downloadsRefresh'))$('downloadsRefresh').onclick=renderDownloadQueue;
+function centerUrl(){return $('centerUrl')?.value.trim()||''}
+if($('inspectCenterUrl'))$('inspectCenterUrl').onclick=async()=>{
+ const url=centerUrl(),status=$('centerStatus');if(!url){status.textContent='Paste a direct media URL first.';return}
+ status.textContent='Checking the media link…';
+ try{const meta=await inspectMediaUrl(url);const mode=$('centerMode').value;if(mode==='audio'&&!meta.type.startsWith('audio/'))throw Error('The detected source is not audio.');if(mode==='video'&&!meta.type.startsWith('video/'))throw Error('The detected source is not video.');status.textContent='Detected '+meta.type+' · '+formatBytes(meta.bytes)+(meta.filename?' · '+meta.filename:'')+'. Quality label is user-selected; the link itself determines the actual quality.';if(meta.filename&&!$('centerName').value)$('centerName').value=meta.filename.replace(/\\.[^.]+$/,'');}
+ catch(e){status.textContent=e.message+' Some hosts block browser inspection (CORS); this does not prove the link is invalid.'}
+};
+if($('addCenterUrl'))$('addCenterUrl').onclick=()=>{
+ const url=centerUrl(),name=$('centerName').value.trim()||'SIN media download',quality=$('centerQuality').value;
+ if(!/^https?:\\/\\//i.test(url)){$('centerStatus').textContent='Enter a valid direct HTTP(S) media URL.';return}
+ enqueueDownload(url,name,quality);$('centerMode').value='auto';$('centerUrl').value='';$('centerName').value='';$('centerStatus').textContent='Added to queue. The source must allow direct file access for downloading to work.';
+};
 if($('downloadsClear'))$('downloadsClear').onclick=()=>{downloadQueue=[];saveDownloadQueue()};
 function enqueueDownload(url,name,quality){if(!/^https?:\/\//i.test(url)){$('playerStatus').textContent='Enter a valid direct HTTP(S) URL first.';return}if(downloadQueue.some(x=>x.url===url&&x.quality===quality)){$('playerStatus').textContent='This source and quality are already queued.';return}downloadQueue.push({url,name:name||'Video download',quality:quality||'Original',status:'Queued'});saveDownloadQueue();$('playerStatus').textContent='Added to queue · '+(quality||'Original')+'. Make sure the URL is the matching quality version.'}
-function startQueuedDownload(i){const item=downloadQueue[i];if(!item)return;const a=document.createElement('a');a.href=item.url;a.rel='noopener';a.download=(item.name||'SIN-download').replace(/[^a-z0-9._ -]/gi,'_')+'-'+(item.quality||'Original')+'.mp4';document.body.appendChild(a);a.click();a.remove();item.status='Download requested · check device downloads';saveDownloadQueue();const st=$('playerStatus');if(st)st.textContent='Download requested. Android/browser handles saving; the source may block direct downloads.'}
+function safeFileName(name){return String(name||'SIN-download').replace(/[\\/:*?"<>|]+/g,'_').replace(/\\s+/g,' ').trim().slice(0,120)||'SIN-download'}
+function mediaExt(type,url){const path=(()=>{try{return new URL(url).pathname.toLowerCase()}catch(e){return ''}})();const m=path.match(/\\.(mp4|m4v|webm|mp3|m4a|aac|ogg|wav|flac|mov|mkv)$/);if(m)return m[1];if(type&&type.includes('audio'))return 'mp3';return 'mp4'}
+async function inspectMediaUrl(url){
+ if(!/^https?:\\/\\//i.test(url))throw Error('Enter a valid HTTP(S) media URL.');
+ const u=new URL(url);if(!['http:','https:'].includes(u.protocol))throw Error('Only HTTP(S) URLs are supported.');
+ const response=await fetch(url,{method:'HEAD',mode:'cors',cache:'no-store'});
+ if(!response.ok)throw Error('Source returned HTTP '+response.status+'.');
+ const type=response.headers.get('content-type')||'unknown',size=Number(response.headers.get('content-length')||0),disposition=response.headers.get('content-disposition')||'';
+ if(type.includes('text/html'))throw Error('This is a webpage, not a direct media file.');
+ if(!(type.startsWith('video/')||type.startsWith('audio/')||/\\.(mp4|m4v|webm|mp3|m4a|aac|ogg|wav|flac|mov|mkv|m3u8)(\\?|$)/i.test(url)))throw Error('Could not confirm a direct audio/video file. Add only a direct media URL.');
+ const filename=(disposition.match(/filename\*?=(?:UTF-8''|")?([^";]+)/i)||[])[1];
+ return {type,size,filename:filename?decodeURIComponent(filename.replace(/"/g,'')):decodeURIComponent(u.pathname.split('/').pop()||''),bytes:size};
+}
+function formatBytes(n){if(!n)return 'Size not provided';const units=['B','KB','MB','GB','TB'];let v=n,i=0;while(v>=1024&&i<units.length-1){v/=1024;i++}return v.toFixed(i?1:0)+' '+units[i]}
+async function startQueuedDownload(i){
+ const item=downloadQueue[i];if(!item)return;
+ item.status='Preparing download…';saveDownloadQueue();
+ try{
+  const response=await fetch(item.url,{method:'GET',mode:'cors'});
+  if(!response.ok)throw Error('Source returned HTTP '+response.status+'.');
+  const type=response.headers.get('content-type')||item.contentType||'application/octet-stream';
+  if(type.includes('text/html'))throw Error('The source returned a webpage, not a media file.');
+  const blob=await response.blob();
+  if(!blob.size)throw Error('The source returned an empty file.');
+  const objectUrl=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=objectUrl;a.download=safeFileName(item.name||'SIN-download')+'.'+mediaExt(type,item.url);
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(objectUrl),60000);
+  item.status='Download sent to device';item.size=item.size||formatBytes(blob.size);item.bytes=blob.size;
+ }catch(error){
+  const a=document.createElement('a');a.href=item.url;a.rel='noopener';a.target='_blank';a.download=safeFileName(item.name||'SIN-download');
+  document.body.appendChild(a);a.click();a.remove();
+  item.status='Opened source link · host may block direct saving';
+  item.error=error.message;
+ }
+ saveDownloadQueue();
+ const st=$('centerStatus')||$('playerStatus');if(st)st.textContent=item.status+(item.error?' — '+item.error:'');
+}
 function mappleUrl(id,type,season=0,episode=0){
  const base=type==='tv'?('https://mapple.fun/watch/tv/'+id+'-'+season+'-'+episode):('https://mapple.fun/watch/movie/'+id);
  const params=new URLSearchParams({autoPlay:'true',title:'true',poster:'true',theme:'6D42C7'});
