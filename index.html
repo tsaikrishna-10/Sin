@@ -23,6 +23,63 @@
 @media(max-width:700px){.app-header{height:60px;padding:0 15px;gap:13px}.brand{font-size:23px}.header-search{max-width:none}.header-search input{padding:9px 11px;font-size:13px}.header-search .primary{padding:9px 12px;font-size:13px}.wrap{padding:16px 14px 30px}.hero{min-height:405px;padding:23px;background-position:58% center;border-radius:19px}.hero h1{font-size:49px;letter-spacing:-2.5px}.hero p{font-size:13px}.rail{grid-auto-columns:128px;gap:11px}.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}.card-meta{padding:8px}.card-title{font-size:12px}.detail-hero{min-height:370px}.detail-shade{align-items:end}.detail-main{grid-template-columns:98px 1fr;gap:13px}.detail-main h1{font-size:26px}.detail-main p{font-size:12px;margin:5px 0}.episode{grid-template-columns:88px 1fr auto}.episode small{font-size:11px}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.section-head{margin-top:28px}.section-head h2{font-size:19px}.panel{padding:15px}}
 @media(max-width:360px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.header-search .primary{display:none}.hero h1{font-size:42px}}
 
+
+/* Nuvio-inspired mobile layout for SIN */
+:root{--bg:#000;--surface:#1b1b1d;--surface2:#242426;--line:#303033;--muted:#96969d;--text:#f7f7f8;--purple:#77777d;--purple2:#d9d9dc;--navh:82px}
+html,body{background:#000}
+body{background:#000;padding-bottom:calc(var(--navh) + env(safe-area-inset-bottom))}
+.app-header{display:none}
+.wrap{max-width:100%;padding:0 0 36px}
+#home{padding-bottom:12px}
+.hero{min-height:min(690px,83svh);height:min(690px,83svh);border:0;border-radius:0 0 28px 28px;padding:28px 24px 48px;align-items:flex-end;justify-content:center;text-align:center;background-color:#171719;background-position:center 24%;background-size:cover;box-shadow:none}
+.hero:after{background:linear-gradient(0deg,#000 0%,#000b 25%,transparent 76%),linear-gradient(180deg,#0002,transparent 30%)}
+.hero-copy{max-width:650px;width:100%;margin:0 auto}
+.eyebrow{display:none}
+.hero h1{font-size:clamp(32px,8vw,54px);letter-spacing:-1.8px;line-height:1.04;margin:0 0 12px}
+.hero p{font-size:13px;line-height:1.45;margin:0 auto;color:#eee;max-width:420px}
+.hero .actions{justify-content:center;margin-top:20px}
+.hero .primary{background:#f4f4f5;color:#080808;border-radius:999px;padding:14px 30px;box-shadow:none}
+.hero .secondary{border-radius:999px;background:#1c1c1dcc;border:1px solid #ffffff55}
+.section-head{margin:30px 20px 15px}
+.section-head h2{font-size:22px;font-weight:750;letter-spacing:-.5px}
+.rail{padding:0 20px 12px;grid-auto-columns:142px;gap:12px;scrollbar-width:none}
+.card{border:0;border-radius:12px;background:#171719}
+.card:hover{transform:none;box-shadow:none}
+.continue-rail{grid-auto-columns:minmax(280px,68vw)}
+.continue-card{min-height:164px;border:0;border-radius:16px;background:#171719}
+.continue-art{opacity:.82}
+.continue-content{min-height:164px}
+.page{min-height:calc(100svh - var(--navh))}
+#movies,#tv,#search,#watchlist,#downloads,#settings,#detail,#player{padding:26px 20px 38px}
+#movies .section-head,#tv .section-head,#search .section-head,#watchlist .section-head,#downloads .section-head{margin:0 0 18px}
+.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.bottom-nav{left:50%;right:auto;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom));width:calc(100% - 44px);max-width:590px;height:76px;padding:7px 8px;background:#242426ed;border:1px solid #55555b;border-radius:40px;box-shadow:0 8px 30px #0009;backdrop-filter:blur(12px);grid-template-columns:repeat(4,1fr);gap:4px}
+.bottom-nav button{font-size:12px;gap:1px;border-radius:32px;color:#a7a7ad}
+.bottom-nav button .nav-icon{font-size:24px;line-height:1.15}
+.bottom-nav button.active{background:#454549;color:#fff}
+.bottom-nav button.active .nav-icon{filter:none}
+.profile-heading{display:flex;align-items:center;gap:15px;margin:18px 0 28px}
+.profile-heading h1{font-size:36px;letter-spacing:-1.3px;margin:0;font-weight:850}
+.profile-kicker{font-size:10px;letter-spacing:2px;color:#999;text-transform:uppercase;font-weight:800}
+.profile-avatar{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#3b3b40;color:white;font-size:24px;font-weight:900;border:2px solid #777}
+.settings-group{background:#1b1b1d;border:1px solid #29292c;border-radius:26px;padding:6px 18px;margin:0 0 18px;overflow:hidden}
+.settings-group-title{font-size:12px;color:#a4a4aa;text-transform:uppercase;letter-spacing:1.2px;font-weight:800;padding:14px 4px 4px}
+.settings-row{width:100%;display:flex;align-items:center;gap:15px;text-align:left;background:transparent;color:#f5f5f6;padding:17px 2px;border-bottom:1px solid #ffffff0b}
+.settings-row:last-child{border-bottom:0}
+.settings-icon{width:48px;height:48px;flex:0 0 48px;border-radius:15px;background:#353538;display:grid;place-items:center;font-size:21px}
+.settings-row strong{display:block;font-size:16px;font-weight:600}
+.settings-row small{display:block;color:#99999f;font-size:13px;line-height:1.35;margin-top:2px}
+.settings-arrow{margin-left:auto;color:#85858a;font-size:25px}
+#settings .panel{background:transparent;border:0;border-radius:0;padding:16px 2px;margin:0;border-bottom:1px solid #ffffff0b}
+#settings .panel:last-child{border-bottom:0}
+#settings .panel h3{font-size:16px}
+#settings .panel p{font-size:13px}
+#settings .field{background:#29292c;border-color:#3c3c40}
+#settings .actions{gap:8px}
+#settings .settings-group .panel:first-of-type{padding-top:12px}
+@media(min-width:701px){.wrap{max-width:900px;margin:auto}.hero{border-radius:0 0 28px 28px}.bottom-nav{bottom:16px}}
+@media(max-width:420px){.hero{min-height:650px;height:78svh;padding:24px 18px 42px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.bottom-nav{width:calc(100% - 36px)}}
+
 </style>
 </head>
 <body>
@@ -76,20 +133,20 @@
  <div id="downloadsQueue"><div class="empty">Your download queue is empty. Paste an authorized direct media URL above.</div></div></div>
  <div class="panel"><h3>How downloads work</h3><p class="muted">SIN keeps your download queue and starts file downloads from this screen. Android/browser handles the actual file save. A provider must allow direct downloads; an embedded Mapple stream cannot be converted into a file by SIN.</p></div>
  </section>
- <section id="settings" class="page"><div class="section-head"><h2>Settings</h2></div>
+ <section id="settings" class="page"><div class="profile-heading"><div class="profile-avatar">S</div><div><div class="profile-kicker">SIN PROFILE</div><h1>Settings</h1></div></div>
+ <div class="settings-group"><button class="settings-row" data-open-page="downloads"><span class="settings-icon">↓</span><span><strong>Downloads</strong><small>Download queue, quality and storage</small></span><span class="settings-arrow">›</span></button><button class="settings-row" data-open-page="player"><span class="settings-icon">▶</span><span><strong>Playback</strong><small>Player, subtitles and playback controls</small></span><span class="settings-arrow">›</span></button></div>
+ <div class="settings-group">
  <div class="panel"><h3>Appearance</h3><p class="muted">Choose the typography used throughout SIN. Your choice is saved on this device.</p><label for="fontSelect" class="muted">App font</label><select class="field" id="fontSelect"><option value="plus-jakarta">Plus Jakarta Sans · Recommended</option><option value="ibm-plex">IBM Plex Sans · Editorial</option><option value="outfit">Outfit · Modern</option><option value="manrope">Manrope · Refined</option><option value="system">System default</option></select><p id="fontPreview" style="font-size:18px;font-weight:700;margin:14px 0 4px">Cinema, your way.</p><p class="muted" style="margin:0">Preview · The selected font applies to menus, cards and details.</p><div class="actions"><button class="secondary" id="resetFont">Reset font</button></div></div>
- <div class="panel"><h3>TMDB connection</h3><p class="muted">Paste your TMDB API Read Access Token. It is stored only in this browser on this device.</p><label for="tmdbKey" class="muted">TMDB API Read Access Token (Bearer)</label><input class="field" id="tmdbKey" placeholder="Paste your TMDB Read Access Token" autocomplete="off"><div class="actions"><button class="primary" id="saveKey">Save API key</button><button class="secondary" id="clearKey">Remove key</button></div><div id="keyStatus" class="status"></div></div>
- <div class="panel"><h3>About SIN</h3><p class="muted">SIN uses TMDB for discovery and metadata. It is not affiliated with TMDB. TMDB does not provide movie or TV video files. Use official streaming services or add authorized direct/embed URLs in Player.</p><a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener" style="color:var(--green)">Get a TMDB API key ↗</a></div>
+ </div><div class="settings-group"><div class="settings-group-title">Content & Discovery</div><div class="panel"><h3>TMDB connection</h3><p class="muted">Paste your TMDB API Read Access Token. It is stored only in this browser on this device.</p><label for="tmdbKey" class="muted">TMDB API Read Access Token (Bearer)</label><input class="field" id="tmdbKey" placeholder="Paste your TMDB Read Access Token" autocomplete="off"><div class="actions"><button class="primary" id="saveKey">Save API key</button><button class="secondary" id="clearKey">Remove key</button></div><div id="keyStatus" class="status"></div></div>
+ </div><div class="settings-group"><div class="settings-group-title">About</div><div class="panel"><h3>About SIN</h3><p class="muted">SIN uses TMDB for discovery and metadata. It is not affiliated with TMDB. TMDB does not provide movie or TV video files. Use official streaming services or add authorized direct/embed URLs in Player.</p><a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener" style="color:var(--green)">Get a TMDB API key ↗</a></div></div>
 </section>
 <div class="footer">SIN · Independent media companion. This product uses the TMDB API but is not endorsed or certified by TMDB.</div>
 </main>
 <nav class="bottom-nav" aria-label="Main navigation">
  <button class="active" data-page="home"><span class="nav-icon">⌂</span>Home</button>
- <button data-page="movies"><span class="nav-icon">▣</span>Movies</button>
- <button data-page="tv"><span class="nav-icon">▤</span>TV Shows</button>
- <button data-page="watchlist"><span class="nav-icon">♡</span>My List</button>
- <button data-page="downloads"><span class="nav-icon">↓</span>Downloads</button>
- <button data-page="settings"><span class="nav-icon">⚙</span>Settings</button>
+ <button data-page="search"><span class="nav-icon">⌕</span>Search</button>
+ <button data-page="watchlist"><span class="nav-icon">▣</span>Library</button>
+ <button data-page="settings"><span class="nav-icon">●</span>Profile</button>
 </nav>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js" defer></script>
 <script>
@@ -127,6 +184,8 @@ window.sinNavigate=page;
 
 /* Delegated navigation: resilient to mobile taps and dynamically rendered controls. */
 document.addEventListener('click',e=>{
+ const settingNav=e.target.closest('[data-open-page]');
+ if(settingNav){e.preventDefault();page(settingNav.dataset.openPage);return}
  const nav=e.target.closest('.bottom-nav [data-page]');
  if(nav){e.preventDefault();page(nav.dataset.page);return}
  const go=e.target.closest('[data-go]');
